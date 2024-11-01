@@ -7,23 +7,23 @@ import { BankrunProvider, startAnchor } from "anchor-bankrun";
 const IDL = require("../target/idl/voting.json");
 
 const votingAddress = new PublicKey(
-  "AsjZ3kWAUSQRNt2pZVeJkywhZ6gpLpHZmJjduPmKZDZZ",
+  "2Lcon4GW5oDQrTMd4yEnuZoqfFET8FwGWTYM779iprwt",
 );
 
 describe("votingdapp", () => {
   let context;
   let provider;
-  let votingProgram: Program<Voting>;
+  anchor.setProvider(anchor.AnchorProvider.env());
+  let votingProgram = anchor.workspace.Voting as Program<Voting>;
 
   beforeAll(async () => {
-    context = await startAnchor(
-      "",
-      [{ name: "votingdapp", programId: votingAddress }],
-      [],
-    );
-    provider = new BankrunProvider(context);
-
-    votingProgram = new Program<Voting>(IDL, provider);
+    // context = await startAnchor(
+    //   "",
+    //   [{ name: "votingdapp", programId: votingAddress }],
+    //   [],
+    // );
+    // provider = new BankrunProvider(context);
+    // votingProgram = new Program<Voting>(IDL, provider);
   });
 
   it("Initialize poll", async () => {
@@ -53,32 +53,32 @@ describe("votingdapp", () => {
 
   it("Initialize candidate", async () => {
     await votingProgram.methods
-      .initializeCandidate("jin", new anchor.BN(1))
+      .initializeCandidate("crunchy", new anchor.BN(1))
       .rpc();
 
-    const jinCandidate = await getCandidate(new anchor.BN(1), "jin");
+    const crunchyCandidate = await getCandidate(new anchor.BN(1), "crunchy");
 
-    console.log(jinCandidate);
+    console.log(crunchyCandidate);
 
-    expect(jinCandidate.candidateName).toEqual("jin");
-    expect(jinCandidate.candidateVotes.toNumber()).toEqual(0);
+    expect(crunchyCandidate.candidateName).toEqual("crunchy");
+    expect(crunchyCandidate.candidateVotes.toNumber()).toEqual(0);
 
     await votingProgram.methods
-      .initializeCandidate("xing", new anchor.BN(1))
+      .initializeCandidate("smooth", new anchor.BN(1))
       .rpc();
 
-    const xingCandidate = await getCandidate(new anchor.BN(1), "xing");
+    const smoothCandidate = await getCandidate(new anchor.BN(1), "smooth");
 
-    console.log(xingCandidate);
+    console.log(smoothCandidate);
 
-    expect(xingCandidate.candidateName).toEqual("xing");
-    expect(xingCandidate.candidateVotes.toNumber()).toEqual(0);
+    expect(smoothCandidate.candidateName).toEqual("smooth");
+    expect(smoothCandidate.candidateVotes.toNumber()).toEqual(0);
   });
 
   it("vote", async () => {
-    await votingProgram.methods.vote("xing", new anchor.BN(1)).rpc();
-    const xingCandidate = await getCandidate(new anchor.BN(1), "xing");
-    console.log(xingCandidate);
+    await votingProgram.methods.vote("smooth", new anchor.BN(1)).rpc();
+    const smoothCandidate = await getCandidate(new anchor.BN(1), "smooth");
+    console.log(smoothCandidate);
   });
 
   async function getCandidate(poll_id: anchor.BN, candidate_name: string) {
